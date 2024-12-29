@@ -29,11 +29,13 @@ async def on_message(message):
     user_msg = message.content.lower().replace('!', '').replace('?', '').replace(',', '').replace('.', '')
 
     if 'viktor' in user_msg.split():
-        prompt = "Keep it under 250 characters. Answer or talk as if you are Viktor from the show Arcane: " + message.content
         async with aiohttp.ClientSession() as session:
             payload = {
                 "model": "gpt-4o-mini",
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [
+                    {"role": "system", "content": "Answer or talk as if you are Viktor from Arcane. Keep responses under 200 characters or less. Use expressions when applicable."}
+                    {"role": "user", "content": message.content}
+                    ],
                 "temperature": 0.7
             }
             headers = {"Authorization": f'Bearer {API_KEY}', "Content-Type": "application/json"}
