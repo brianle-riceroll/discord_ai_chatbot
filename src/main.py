@@ -33,7 +33,7 @@ async def on_message(message):
             payload = {
                 "model": "gpt-4o-mini",
                 "messages": [
-                    {"role": "system", "content": "Answer or talk as if you are Viktor from Arcane. Keep responses under 200 characters or less. Use expressions when applicable."}
+                    {"role": "system", "content": "Answer or talk as if you are Viktor from Arcane. Keep responses under 200 characters or less. Use expressions when applicable."},
                     {"role": "user", "content": message.content}
                     ],
                 "temperature": 0.7
