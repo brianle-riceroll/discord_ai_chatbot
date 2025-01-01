@@ -1,6 +1,10 @@
 import aiohttp
 from deps.api import openapi as API_KEY
 
+'''
+This file contains any operations abstracted into a function that an event will use.
+'''
+
 async def ai_generate_response(message):
     '''
     This function is used to generate responses when the name of the bot is mentioned. 
