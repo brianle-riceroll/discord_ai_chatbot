@@ -172,6 +172,3 @@ cython_debug/
 
 # API Token
 src/deps/api.py
-
-# BAT file
-run.bat

@@ -1,5 +1,4 @@
 import discord
-import aiohttp
 from discord.ext import tasks, commands
 from deps.api import token as TOKEN, openapi as API_KEY
 from deps.games_list import status
