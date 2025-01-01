@@ -1,10 +1,9 @@
 import discord
+import aiohttp
 from discord.ext import tasks, commands
-from discord import app_commands
 from deps.api import token as TOKEN, openapi as API_KEY
 from deps.games_list import status
-import aiohttp
-
+from deps.operations import ai_generate_response
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -14,6 +13,7 @@ client = commands.Bot(command_prefix="!", intents=intents)
 
 @client.event
 async def on_ready():
+    '''Bot starting'''
     print(f'Ready to go!')
     change_status.start()
     await client.tree.sync()
@@ -21,50 +21,23 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    '''AI Generated responses'''
     if message.author == client.user:
         return
 
     print(f'{message.author}: {message.content}')
+    await ai_generate_response(message)
 
-    user_msg = message.content.lower().replace('!', '').replace('?', '').replace(',', '').replace('.', '')
-
-    if 'viktor' in user_msg.split():
-        async with aiohttp.ClientSession() as session:
-            payload = {
-                "model": "gpt-4o-mini",
-                "messages": [
-                    {"role": "system", "content": "Answer or talk as if you are Viktor from Arcane. Keep responses under 200 characters or less. Use expressions when applicable."},
-                    {"role": "user", "content": message.content}
-                    ],
-                "temperature": 0.7
-            }
-            headers = {"Authorization": f'Bearer {API_KEY}', "Content-Type": "application/json"}
-            async with session.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers) as resp:
-                response = await resp.json()
-                await message.channel.send(response['choices'][0]['message']['content'])
-
-        
         
 @tasks.loop(hours=1)
 async def change_status():
+    '''Discord status looping'''
     await client.change_presence(activity=discord.Game(next(status)))
 
-@client.tree.command(name="viktor", description="Talk with Viktor!")
-async def viktor(ctx: commands.Context, *, prompt: str):
-    await ctx.response.defer()
-    prompt = "Keep it under 250 characters. Answer as if you are Viktor from the show Arcane: " + prompt
-    async with aiohttp.ClientSession() as session:
-        payload = {
-            "model": "gpt-4o-mini",
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7
-        }
-        headers = {"Authorization": f'Bearer {API_KEY}', "Content-Type": "application/json"}
-        async with session.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers) as resp:
-            response = await resp.json()
-            await ctx.followup.send(response['choices'][0]['message']['content'])
 
-
+@client.tree.command(name="help", description="placeholder")
+async def help(ctx: commands.Context, *, prompt: str):
+    '''TODO: Help command'''
 
 
 @client.tree.command(name="ping", description="pong")
